@@ -93,6 +93,14 @@ export const actions = {
       throw new Error(error);
     }
   },
+  confirm: async ({ commit }, agentId) => {
+    try {
+      await AgentAPI.confirm(agentId);
+      commit(types.default.EDIT_AGENT, { id: agentId, confirmed: true });
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
 export const mutations = {

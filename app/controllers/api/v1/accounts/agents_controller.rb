@@ -3,6 +3,7 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   before_action :check_authorization
   before_action :validate_limit, only: [:create]
   before_action :validate_limit_for_bulk_create, only: [:bulk_create]
+  before_action :check_admin_authorization, only: [:confirm]
 
   def index
     @agents = agents
@@ -33,6 +34,15 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
     head :ok
   end
 
+  def confirm
+    if @agent.confirmed?
+      render json: { error: 'Agent is already confirmed' }, status: :unprocessable_entity
+      return
+    end
+    @agent.confirm
+    render json: { confirmed: @agent.confirmed? }
+  end
+
   def bulk_create
     emails = params[:emails]
 
@@ -61,6 +71,10 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
 
   def check_authorization
     super(User)
+  end
+
+  def check_admin_authorization
+    render json: { error: 'Unauthorized' }, status: :unauthorized unless current_user.administrator?
   end
 
   def fetch_agent

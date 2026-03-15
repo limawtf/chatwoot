@@ -48,6 +48,13 @@
         "ERROR_MESSAGE": "Could not connect to Woot Server, Please try again later"
       }
     },
+    "CONFIRM": {
+      "BUTTON_TEXT": "Confirm Manually",
+      "API": {
+        "SUCCESS_MESSAGE": "Agent confirmed successfully",
+        "ERROR_MESSAGE": "Could not confirm agent, please try again later"
+      }
+    },
     "DELETE": {
       "BUTTON_TEXT": "Delete",
       "API": {

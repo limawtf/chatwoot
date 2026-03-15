@@ -12,6 +12,10 @@ class Agents extends ApiClient {
       emails,
     });
   }
+
+  confirm(agentId) {
+    return axios.post(`${this.url}/${agentId}/confirm`);
+  }
 }
 
 export default new Agents();
