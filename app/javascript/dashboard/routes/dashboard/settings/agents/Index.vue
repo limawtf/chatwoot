@@ -48,6 +48,8 @@ const filteredAgentList = computed(() => {
 
 const uiFlags = computed(() => getters['agents/getUIFlags'].value);
 const currentUserId = computed(() => getters.getCurrentUserID.value);
+const currentRole = computed(() => getters.getCurrentRole.value);
+const isAdministrator = computed(() => currentRole.value === 'administrator');
 const customRoles = useMapGetter('customRole/getCustomRoles');
 
 onMounted(() => {
@@ -141,6 +143,20 @@ const confirmDeletion = () => {
   loading.value[currentAgent.value.id] = true;
   closeDeletePopup();
   deleteAgent(currentAgent.value.id);
+};
+
+const confirmingAgent = ref({});
+
+const confirmAgent = async agent => {
+  confirmingAgent.value[agent.id] = true;
+  try {
+    await store.dispatch('agents/confirm', agent.id);
+    useAlert(t('AGENT_MGMT.CONFIRM.API.SUCCESS_MESSAGE'));
+  } catch (error) {
+    useAlert(t('AGENT_MGMT.CONFIRM.API.ERROR_MESSAGE'));
+  } finally {
+    confirmingAgent.value[agent.id] = false;
+  }
 };
 </script>
 
@@ -250,6 +266,13 @@ const confirmDeletion = () => {
                 >
                   {{ $t('AGENT_MGMT.LIST.VERIFICATION_PENDING') }}
                 </span>
+                <Button
+                  v-if="!agent.confirmed && isAdministrator"
+                  :label="$t('AGENT_MGMT.CONFIRM.BUTTON_TEXT')"
+                  size="xs"
+                  :is-loading="confirmingAgent[agent.id]"
+                  @click="confirmAgent(agent)"
+                />
               </div>
             </div>
           </div>
